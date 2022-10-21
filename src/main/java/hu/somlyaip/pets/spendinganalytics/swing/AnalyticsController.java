@@ -19,8 +19,7 @@ public class AnalyticsController {
     public void createAndInitializeView() {
         // This is ugly, but without this there is a circular references between beans
         this.view = new AnalyticsView(model, this);
-        this.view.createView();
-        this.view.createControls();
+        this.view.createUiComponents();
         this.model.registerTransactionLoadedObserver(this.view);
     }
 

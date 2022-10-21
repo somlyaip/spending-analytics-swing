@@ -17,7 +17,6 @@ public class AnalyticsView implements ITransactionsLoadedObserver {
     private final AnalyticsController controller;
 
     private JFrame viewFrame;
-    private JPanel topPanel;
 
     private JButton buttonBrowseTransactionFile;
     private JLabel labelLoadedTransactionFilename;
@@ -27,24 +26,32 @@ public class AnalyticsView implements ITransactionsLoadedObserver {
         this.controller = controller;
     }
 
-    public void createView() {
+    public void createUiComponents() {
+        createFrame();
+        Container rootPane = createRootPane();
+        createFilePanel(rootPane);
+        JFrame.setDefaultLookAndFeelDecorated(true);
+    }
+
+    private void createFrame() {
         viewFrame = new JFrame("View");
         viewFrame.setTitle("Spending Analytics");
         viewFrame.setSize(800, 500);
         viewFrame.setLocationRelativeTo(null);
         viewFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
-        Container rootPane = viewFrame.getContentPane();
-        rootPane.setLayout(new BorderLayout(5, 5));
-
-        topPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        rootPane.add(topPanel, BorderLayout.PAGE_START);
-
-        JFrame.setDefaultLookAndFeelDecorated(true);
         viewFrame.setVisible(true);
     }
 
-    public void createControls() {
+    private Container createRootPane() {
+        Container rootPane = viewFrame.getContentPane();
+        rootPane.setLayout(new BorderLayout(5, 5));
+        return rootPane;
+    }
+
+    private void createFilePanel(Container rootPane) {
+        JPanel topPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        rootPane.add(topPanel, BorderLayout.PAGE_START);
+
         buttonBrowseTransactionFile = new JButton("Browse transactions");
         buttonBrowseTransactionFile.addActionListener(event -> controller.browseTransactionDataFile());
         topPanel.add(buttonBrowseTransactionFile);
