@@ -1,8 +1,11 @@
 package hu.somlyaip.pets.spendinganalytics.swing;
 
+import hu.somlyaip.pets.spendinganalytics.swing.transaction.MoneyTransaction;
+
 import javax.swing.*;
 import java.awt.*;
 import java.io.File;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -15,21 +18,31 @@ public class AnalyticsView implements ITransactionsLoadedObserver {
     @SuppressWarnings({"FieldCanBeLocal", "unused"})
     private final AnalyticsModel model;
     private final AnalyticsController controller;
+    private final HufFormatter hufFormatter;
+    private final DateFormatter dateFormatter;
 
     private JFrame viewFrame;
+    private Container rootPane;
 
     private JButton buttonBrowseTransactionFile;
     private JLabel labelLoadedTransactionFilename;
+    private JTable transactionTable;
 
-    public AnalyticsView(AnalyticsModel model, AnalyticsController controller) {
+    public AnalyticsView(
+            AnalyticsModel model, AnalyticsController controller,
+            HufFormatter hufFormatter, DateFormatter dateFormatter
+    ) {
         this.model = model;
         this.controller = controller;
+        this.hufFormatter = hufFormatter;
+        this.dateFormatter = dateFormatter;
     }
 
     public void createUiComponents() {
         createFrame();
-        Container rootPane = createRootPane();
-        createFilePanel(rootPane);
+        createRootPane();
+        createFilePanel();
+        createTransactionPanel();
         JFrame.setDefaultLookAndFeelDecorated(true);
     }
 
@@ -42,23 +55,40 @@ public class AnalyticsView implements ITransactionsLoadedObserver {
         viewFrame.setVisible(true);
     }
 
-    private Container createRootPane() {
-        Container rootPane = viewFrame.getContentPane();
+    private void createRootPane() {
+        rootPane = viewFrame.getContentPane();
         rootPane.setLayout(new BorderLayout(5, 5));
-        return rootPane;
     }
 
-    private void createFilePanel(Container rootPane) {
-        JPanel topPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        rootPane.add(topPanel, BorderLayout.PAGE_START);
+    private void createFilePanel() {
+        JPanel filePanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        rootPane.add(filePanel, BorderLayout.PAGE_START);
 
         buttonBrowseTransactionFile = new JButton("Browse transactions");
         buttonBrowseTransactionFile.addActionListener(event -> controller.browseTransactionDataFile());
-        topPanel.add(buttonBrowseTransactionFile);
+        filePanel.add(buttonBrowseTransactionFile);
 
         labelLoadedTransactionFilename = new JLabel();
         labelLoadedTransactionFilename.setVisible(false);
-        topPanel.add(labelLoadedTransactionFilename, BorderLayout.CENTER);
+        filePanel.add(labelLoadedTransactionFilename, BorderLayout.CENTER);
+    }
+
+    private void createTransactionPanel() {
+        transactionTable = createTransactionTable(Collections.emptyList());
+        rootPane.add(transactionTable, BorderLayout.CENTER);
+    }
+
+    private JTable createTransactionTable(List<MoneyTransaction> transactions) {
+        return new JTable(
+                transactions.stream().map(moneyTransaction ->
+                        new Object[]{
+                                moneyTransaction.getSeller(),
+                                hufFormatter.format(moneyTransaction.getAmount()),
+                                dateFormatter.format(moneyTransaction.getDate())
+                        }
+                ).toList().toArray(new Object[][]{}),
+                new Object[]{"Seller", "Amount", "Date"}
+        );
     }
 
     public Optional<File> browseTransactionDataFile() {
@@ -79,8 +109,19 @@ public class AnalyticsView implements ITransactionsLoadedObserver {
     }
 
     @Override
-    public void onLoadingTransactionsCompleted(File transactionDataFile, List<Transaction> transactions) {
+    public void onLoadingTransactionsCompleted(File transactionDataFile, List<MoneyTransaction> transactions) {
         labelLoadedTransactionFilename.setText(transactionDataFile.getAbsolutePath());
         labelLoadedTransactionFilename.setVisible(true);
+
+        updateTransactionTable(transactions);
+    }
+
+    private void updateTransactionTable(List<MoneyTransaction> transactions) {
+        rootPane.remove(transactionTable);
+        transactionTable = createTransactionTable(transactions);
+        rootPane.add(transactionTable, BorderLayout.CENTER);
+        // Refresh pane
+        rootPane.revalidate();
+        rootPane.repaint();
     }
 }

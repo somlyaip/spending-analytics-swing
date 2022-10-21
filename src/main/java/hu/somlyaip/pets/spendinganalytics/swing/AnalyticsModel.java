@@ -1,5 +1,7 @@
 package hu.somlyaip.pets.spendinganalytics.swing;
 
+import hu.somlyaip.pets.spendinganalytics.swing.transaction.ITransactionLoader;
+import hu.somlyaip.pets.spendinganalytics.swing.transaction.MoneyTransaction;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
@@ -12,12 +14,14 @@ import java.util.List;
  */
 @Component
 public class AnalyticsModel {
+    private final ITransactionLoader transactionLoader;
 
-    private final List<Transaction> transactions;
-
+    private List<MoneyTransaction> transactions;
     private final List<ITransactionsLoadedObserver> transactionsLoadedObservers;
 
-    public AnalyticsModel() {
+    public AnalyticsModel(ITransactionLoader transactionLoader) {
+        this.transactionLoader = transactionLoader;
+
         transactionsLoadedObservers = new ArrayList<>();
         transactions = new ArrayList<>();
     }
@@ -33,13 +37,7 @@ public class AnalyticsModel {
     }
 
     public void loadTransactionDataFile(File transactionDataFile) {
-        // TODO: first of all load transactions
-        try {
-            Thread.sleep(1500);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
-
+        transactions = transactionLoader.loadTransactionsFrom(transactionDataFile);
         notifyTransactionLoadedObservers(transactionDataFile);
     }
 }
