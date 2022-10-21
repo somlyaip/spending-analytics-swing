@@ -1,5 +1,8 @@
 package hu.somlyaip.pets.spendinganalytics.swing;
 
+import hu.somlyaip.pets.spendinganalytics.swing.view.AnalyticsView;
+import hu.somlyaip.pets.spendinganalytics.swing.view.DateFormatter;
+import hu.somlyaip.pets.spendinganalytics.swing.view.HufFormatter;
 import org.springframework.stereotype.Component;
 
 /**

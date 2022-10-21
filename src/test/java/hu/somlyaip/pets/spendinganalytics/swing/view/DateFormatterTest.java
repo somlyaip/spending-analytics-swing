@@ -1,4 +1,4 @@
-package hu.somlyaip.pets.spendinganalytics.swing;
+package hu.somlyaip.pets.spendinganalytics.swing.view;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
