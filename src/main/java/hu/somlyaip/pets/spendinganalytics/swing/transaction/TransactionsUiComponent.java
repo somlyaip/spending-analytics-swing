@@ -1,6 +1,7 @@
-package hu.somlyaip.pets.spendinganalytics.swing.view;
+package hu.somlyaip.pets.spendinganalytics.swing.transaction;
 
-import hu.somlyaip.pets.spendinganalytics.swing.transaction.MoneyTransaction;
+import hu.somlyaip.pets.spendinganalytics.swing.view.DateFormatter;
+import hu.somlyaip.pets.spendinganalytics.swing.view.HufFormatter;
 
 import javax.swing.*;
 import java.awt.*;

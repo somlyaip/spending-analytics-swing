@@ -1,7 +1,9 @@
 package hu.somlyaip.pets.spendinganalytics.swing.view;
 
 import hu.somlyaip.pets.spendinganalytics.swing.*;
+import hu.somlyaip.pets.spendinganalytics.swing.datafile.DataFileUiComponent;
 import hu.somlyaip.pets.spendinganalytics.swing.transaction.MoneyTransaction;
+import hu.somlyaip.pets.spendinganalytics.swing.transaction.TransactionsUiComponent;
 
 import javax.swing.*;
 import java.awt.*;

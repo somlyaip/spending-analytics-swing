@@ -1,4 +1,4 @@
-package hu.somlyaip.pets.spendinganalytics.swing.view;
+package hu.somlyaip.pets.spendinganalytics.swing.datafile;
 
 import hu.somlyaip.pets.spendinganalytics.swing.IAnalyticsController;
 
