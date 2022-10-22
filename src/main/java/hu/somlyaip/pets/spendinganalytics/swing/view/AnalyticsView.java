@@ -30,7 +30,7 @@ public class AnalyticsView implements ITransactionsLoadedObserver {
         this.controller = controller;
     }
 
-    public void createUiComponents(HufFormatter hufFormatter, DateFormatter dateFormatter) {
+    public void createUiElements(HufFormatter hufFormatter, DateFormatter dateFormatter) {
         createFrame();
         createRootPane();
 
