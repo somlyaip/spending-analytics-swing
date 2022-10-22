@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
  * created at 2022. 10. 19.
  */
 @Component
-public class AnalyticsController {
+public class AnalyticsController implements IAnalyticsController {
 
     private final AnalyticsModel model;
     private final HufFormatter hufFormatter;
@@ -30,6 +30,7 @@ public class AnalyticsController {
         this.model.registerTransactionLoadedObserver(this.view);
     }
 
+    @Override
     public void browseTransactionDataFile() {
         view.browseTransactionDataFile().ifPresent((file) -> new Thread(() -> {
             view.disableBrowseButton();

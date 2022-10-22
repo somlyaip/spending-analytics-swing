@@ -1,6 +1,6 @@
 package hu.somlyaip.pets.spendinganalytics.swing.view;
 
-import hu.somlyaip.pets.spendinganalytics.swing.AnalyticsController;
+import hu.somlyaip.pets.spendinganalytics.swing.IAnalyticsController;
 
 import javax.swing.*;
 import java.awt.*;
@@ -12,11 +12,11 @@ import java.io.File;
  */
 public class DataFileUiComponent extends JPanel {
 
-    private final AnalyticsController controller;
+    private final IAnalyticsController controller;
     private JButton buttonBrowseTransactionFile;
     private JLabel labelLoadedTransactionFilename;
 
-    public DataFileUiComponent(AnalyticsController controller) {
+    public DataFileUiComponent(IAnalyticsController controller) {
         super(new FlowLayout(FlowLayout.LEFT));
         this.controller = controller;
 
