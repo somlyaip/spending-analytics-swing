@@ -1,5 +1,7 @@
 package hu.somlyaip.pets.spendinganalytics.swing.categories;
 
+import hu.somlyaip.pets.spendinganalytics.swing.AnalyticsModel;
+
 import javax.swing.*;
 import java.awt.*;
 import java.util.List;
@@ -9,12 +11,22 @@ import java.util.List;
  * created at 2022. 10. 22.
  */
 public class CategoriesUiComponent extends JPanel {
-    public CategoriesUiComponent() {
+    private final AnalyticsModel model;
+
+    public CategoriesUiComponent(AnalyticsModel model) {
         super(new FlowLayout(FlowLayout.LEFT, 5, 5));
+        this.model = model;
     }
 
     public void updateCategories(List<Category> categories) {
         removeAll();
-        categories.forEach(c -> add(new JButton(c.getName())));
+        //noinspection Convert2MethodRef
+        categories.forEach(category -> add(
+                new CategoryToggleButton(
+                        category,
+                        selectedCategory -> model.updateSelectedCategory(selectedCategory),
+                        unselectedCategory -> model.updateSelectedCategory(null))
+                )
+        );
     }
 }

@@ -1,6 +1,4 @@
-package hu.somlyaip.pets.spendinganalytics.swing;
-
-import hu.somlyaip.pets.spendinganalytics.swing.transaction.MoneyTransaction;
+package hu.somlyaip.pets.spendinganalytics.swing.transaction;
 
 import java.io.File;
 import java.util.List;

@@ -29,6 +29,7 @@ public class AnalyticsController implements IAnalyticsController {
         this.view.createUiElements(hufFormatter, dateFormatter);
         this.model.registerTransactionLoadedObserver(this.view);
         this.model.registerCategoriesUpdatedObserver(this.view);
+        this.model.registerSelectedCategoryUpdatedObserver(this.view);
     }
 
     @Override

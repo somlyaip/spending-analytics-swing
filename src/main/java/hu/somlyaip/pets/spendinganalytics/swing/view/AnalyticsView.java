@@ -3,13 +3,17 @@ package hu.somlyaip.pets.spendinganalytics.swing.view;
 import hu.somlyaip.pets.spendinganalytics.swing.*;
 import hu.somlyaip.pets.spendinganalytics.swing.categories.CategoriesUiComponent;
 import hu.somlyaip.pets.spendinganalytics.swing.categories.Category;
+import hu.somlyaip.pets.spendinganalytics.swing.categories.ICategoriesUpdatedObserver;
+import hu.somlyaip.pets.spendinganalytics.swing.categories.ISelectedCategoryUpdatedObserver;
 import hu.somlyaip.pets.spendinganalytics.swing.datafile.DataFileUiComponent;
+import hu.somlyaip.pets.spendinganalytics.swing.transaction.ITransactionsLoadedObserver;
 import hu.somlyaip.pets.spendinganalytics.swing.transaction.MoneyTransaction;
 import hu.somlyaip.pets.spendinganalytics.swing.transaction.TransactionsUiComponent;
 
 import javax.swing.*;
 import java.awt.*;
 import java.io.File;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -17,7 +21,8 @@ import java.util.Optional;
  * @author somlyaip
  * created at 2022. 10. 19.
  */
-public class AnalyticsView implements ITransactionsLoadedObserver, ICategoriesUpdatedObserver {
+public class AnalyticsView
+        implements ITransactionsLoadedObserver, ICategoriesUpdatedObserver, ISelectedCategoryUpdatedObserver {
 
     @SuppressWarnings({"FieldCanBeLocal", "unused"})
     private final AnalyticsModel model;
@@ -42,7 +47,7 @@ public class AnalyticsView implements ITransactionsLoadedObserver, ICategoriesUp
         this.dataFileUiComponent = new DataFileUiComponent(controller);
         rootPane.add(this.dataFileUiComponent, BorderLayout.PAGE_START);
 
-        this.categoriesUiComponent = new CategoriesUiComponent();
+        this.categoriesUiComponent = new CategoriesUiComponent(model);
         this.transactionsUiComponent = new TransactionsUiComponent(hufFormatter, dateFormatter);
         rootPane.add(new CategoriesAndTransactionsUiComponent(this.categoriesUiComponent, this.transactionsUiComponent));
 
@@ -89,5 +94,12 @@ public class AnalyticsView implements ITransactionsLoadedObserver, ICategoriesUp
     @Override
     public void onCategoriesModified(List<Category> categories) {
         categoriesUiComponent.updateCategories(categories);
+    }
+
+    @Override
+    public void onSelectedCategoryUpdated(Category selectedCategory) {
+        transactionsUiComponent.updateTransactions(
+                model.getTransactionsOf(selectedCategory).orElse(Collections.emptyList())
+        );
     }
 }

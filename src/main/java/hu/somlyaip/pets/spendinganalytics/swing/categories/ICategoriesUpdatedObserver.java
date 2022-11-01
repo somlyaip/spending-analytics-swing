@@ -1,6 +1,4 @@
-package hu.somlyaip.pets.spendinganalytics.swing;
-
-import hu.somlyaip.pets.spendinganalytics.swing.categories.Category;
+package hu.somlyaip.pets.spendinganalytics.swing.categories;
 
 import java.util.List;
 
