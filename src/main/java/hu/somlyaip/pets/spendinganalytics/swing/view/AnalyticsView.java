@@ -1,6 +1,8 @@
 package hu.somlyaip.pets.spendinganalytics.swing.view;
 
 import hu.somlyaip.pets.spendinganalytics.swing.*;
+import hu.somlyaip.pets.spendinganalytics.swing.categories.CategoriesUiComponent;
+import hu.somlyaip.pets.spendinganalytics.swing.categories.Category;
 import hu.somlyaip.pets.spendinganalytics.swing.datafile.DataFileUiComponent;
 import hu.somlyaip.pets.spendinganalytics.swing.transaction.MoneyTransaction;
 import hu.somlyaip.pets.spendinganalytics.swing.transaction.TransactionsUiComponent;
@@ -15,7 +17,7 @@ import java.util.Optional;
  * @author somlyaip
  * created at 2022. 10. 19.
  */
-public class AnalyticsView implements ITransactionsLoadedObserver {
+public class AnalyticsView implements ITransactionsLoadedObserver, ICategoriesUpdatedObserver {
 
     @SuppressWarnings({"FieldCanBeLocal", "unused"})
     private final AnalyticsModel model;
@@ -25,6 +27,7 @@ public class AnalyticsView implements ITransactionsLoadedObserver {
     private Container rootPane;
 
     private DataFileUiComponent dataFileUiComponent;
+    private CategoriesUiComponent categoriesUiComponent;
     private TransactionsUiComponent transactionsUiComponent;
 
     public AnalyticsView(AnalyticsModel model, AnalyticsController controller) {
@@ -38,8 +41,10 @@ public class AnalyticsView implements ITransactionsLoadedObserver {
 
         this.dataFileUiComponent = new DataFileUiComponent(controller);
         rootPane.add(this.dataFileUiComponent, BorderLayout.PAGE_START);
+
+        this.categoriesUiComponent = new CategoriesUiComponent();
         this.transactionsUiComponent = new TransactionsUiComponent(hufFormatter, dateFormatter);
-        rootPane.add(this.transactionsUiComponent);
+        rootPane.add(new CategoriesAndTransactionsUiComponent(this.categoriesUiComponent, this.transactionsUiComponent));
 
         JFrame.setDefaultLookAndFeelDecorated(true);
     }
@@ -79,5 +84,10 @@ public class AnalyticsView implements ITransactionsLoadedObserver {
     public void onLoadingTransactionsCompleted(File transactionDataFile, List<MoneyTransaction> transactions) {
         dataFileUiComponent.setLabelLoadedTransactionFilename(transactionDataFile);
         transactionsUiComponent.updateTransactions(transactions);
+    }
+
+    @Override
+    public void onCategoriesModified(List<Category> categories) {
+        categoriesUiComponent.updateCategories(categories);
     }
 }
