@@ -31,7 +31,9 @@ public class CategoriesUiComponent extends JPanel {
             CategoryToggleButton categoryToggleButton = new CategoryToggleButton(
                     category,
                     selectedCategory -> {
+                        // Should I move updating the model to the controller?
                         model.updateSelectedCategory(selectedCategory);
+
                         CategoryToggleButton newSelectedToggleButton = mapCategoryToToggleButton.get(selectedCategory);
                         if (lastSelectedToggleButton != null &&
                                 lastSelectedToggleButton != newSelectedToggleButton) {
@@ -40,7 +42,9 @@ public class CategoriesUiComponent extends JPanel {
                         lastSelectedToggleButton = newSelectedToggleButton;
                     },
                     unselectedCategory -> {
+                        // Should I move updating the model to the controller?
                         model.updateSelectedCategory(null);
+
                         lastSelectedToggleButton = null;
                     });
             mapCategoryToToggleButton.put(category, categoryToggleButton);
