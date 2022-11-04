@@ -1,4 +1,6 @@
-package hu.somlyaip.pets.spendinganalytics.swing.categories;
+package hu.somlyaip.pets.spendinganalytics.swing.categories.ui;
+
+import hu.somlyaip.pets.spendinganalytics.swing.categories.dto.ISelectableCategory;
 
 import javax.swing.*;
 import java.awt.*;
@@ -8,14 +10,15 @@ import java.util.function.Consumer;
 
 public class CategoryToggleButton extends JButton {
 
-    private final Category category;
+    private final ISelectableCategory category;
     private boolean isSelected;
 
     private final Font defaultFont;
     private final Font selectedFont;
 
     public CategoryToggleButton(
-            Category category, Consumer<Category> onCategorySelected, Consumer<Category> onCategoryUnselected
+            ISelectableCategory category, Consumer<ISelectableCategory> onCategorySelected,
+            Consumer<ISelectableCategory> onCategoryUnselected
     ) {
         this.category = category;
 

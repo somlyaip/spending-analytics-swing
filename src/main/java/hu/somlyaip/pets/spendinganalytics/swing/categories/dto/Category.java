@@ -1,4 +1,4 @@
-package hu.somlyaip.pets.spendinganalytics.swing.categories;
+package hu.somlyaip.pets.spendinganalytics.swing.categories.dto;
 
 import hu.somlyaip.pets.spendinganalytics.swing.transaction.MoneyTransaction;
 import lombok.*;
@@ -14,7 +14,7 @@ import java.util.List;
 @Getter
 @EqualsAndHashCode
 @ToString
-public class Category {
+public class Category implements ISelectableCategory {
     private String name;
     private List<String> sellers;
 

@@ -1,9 +1,12 @@
 package hu.somlyaip.pets.spendinganalytics.swing;
 
+import hu.somlyaip.pets.spendinganalytics.swing.categories.dto.Category;
 import hu.somlyaip.pets.spendinganalytics.swing.view.AnalyticsView;
 import hu.somlyaip.pets.spendinganalytics.swing.view.DateFormatter;
 import hu.somlyaip.pets.spendinganalytics.swing.view.HufFormatter;
 import org.springframework.stereotype.Component;
+
+import java.util.ArrayList;
 
 /**
  * @author somlyaip
@@ -34,10 +37,32 @@ public class AnalyticsController implements IAnalyticsController {
 
     @Override
     public void browseTransactionDataFile() {
-        view.browseTransactionDataFile().ifPresent((file) -> new Thread(() -> {
+        view.browseTransactionDataFile().ifPresent(file -> new Thread(() -> {
             view.disableBrowseButton();
             model.loadTransactionDataFile(file);
             view.enableBrowseButton();
         }).start());
+    }
+
+    @Override
+    public void askToAndAddNewCategory() {
+        view.askToNewCategoryName().ifPresent(categoryName -> {
+            var newCategory = new Category(categoryName, new ArrayList<>());
+            model.saveNewCategory(newCategory);
+        });
+    }
+
+    @Override
+    public void removeSelectedCategory() {
+        if (! model.hasSelectedCategory()) {
+            view.notifyUserSelectACategoryToRemove();
+            return;
+        }
+
+        try {
+            model.removeSelectedCategory();
+        } catch (CannotRemoveLogicalCategoryException e) {
+            view.notifyUserCannotRemoveLogicalCategory();
+        }
     }
 }

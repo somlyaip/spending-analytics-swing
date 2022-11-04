@@ -6,4 +6,6 @@ package hu.somlyaip.pets.spendinganalytics.swing;
  */
 public interface IAnalyticsController {
     void browseTransactionDataFile();
+    void askToAndAddNewCategory();
+    void removeSelectedCategory();
 }

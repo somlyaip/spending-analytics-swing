@@ -1,14 +1,16 @@
 package hu.somlyaip.pets.spendinganalytics.swing.view;
 
-import hu.somlyaip.pets.spendinganalytics.swing.*;
-import hu.somlyaip.pets.spendinganalytics.swing.categories.CategoriesUiComponent;
-import hu.somlyaip.pets.spendinganalytics.swing.categories.Category;
-import hu.somlyaip.pets.spendinganalytics.swing.categories.ICategoriesUpdatedObserver;
-import hu.somlyaip.pets.spendinganalytics.swing.categories.ISelectedCategoryUpdatedObserver;
+import hu.somlyaip.pets.spendinganalytics.swing.AnalyticsController;
+import hu.somlyaip.pets.spendinganalytics.swing.AnalyticsModel;
+import hu.somlyaip.pets.spendinganalytics.swing.categories.dto.ISelectableCategory;
+import hu.somlyaip.pets.spendinganalytics.swing.categories.observer.ICategoriesUpdatedObserver;
+import hu.somlyaip.pets.spendinganalytics.swing.categories.observer.ISelectedCategoryUpdatedObserver;
+import hu.somlyaip.pets.spendinganalytics.swing.categories.ui.CategoriesUiComponent;
 import hu.somlyaip.pets.spendinganalytics.swing.datafile.DataFileUiComponent;
 import hu.somlyaip.pets.spendinganalytics.swing.transaction.ITransactionsLoadedObserver;
 import hu.somlyaip.pets.spendinganalytics.swing.transaction.MoneyTransaction;
 import hu.somlyaip.pets.spendinganalytics.swing.transaction.TransactionsUiComponent;
+import org.springframework.util.StringUtils;
 
 import javax.swing.*;
 import java.awt.*;
@@ -47,7 +49,7 @@ public class AnalyticsView
         this.dataFileUiComponent = new DataFileUiComponent(controller);
         rootPane.add(this.dataFileUiComponent, BorderLayout.PAGE_START);
 
-        this.categoriesUiComponent = new CategoriesUiComponent(model);
+        this.categoriesUiComponent = new CategoriesUiComponent(model, controller);
         this.transactionsUiComponent = new TransactionsUiComponent(hufFormatter, dateFormatter);
         rootPane.add(new CategoriesAndTransactionsUiComponent(this.categoriesUiComponent, this.transactionsUiComponent));
 
@@ -77,6 +79,15 @@ public class AnalyticsView
         return Optional.empty();
     }
 
+    public Optional<String> askToNewCategoryName() {
+        String categoryName = JOptionPane.showInputDialog(this.viewFrame, "New category name");
+        if (StringUtils.hasText(categoryName)) {
+            return Optional.of(categoryName);
+        }
+
+        return Optional.empty();
+    }
+
     public void enableBrowseButton() {
         dataFileUiComponent.setEnableButtonBrowseTransactionFile(true);
     }
@@ -92,14 +103,28 @@ public class AnalyticsView
     }
 
     @Override
-    public void onCategoriesModified(List<Category> categories) {
+    public void onCategoriesModified(List<ISelectableCategory> categories) {
         categoriesUiComponent.updateCategories(categories);
     }
 
     @Override
-    public void onSelectedCategoryUpdated(Category selectedCategory) {
+    public void onSelectedCategoryUpdated(ISelectableCategory selectedCategory) {
         transactionsUiComponent.updateTransactions(
                 model.getTransactionsOf(selectedCategory).orElse(Collections.emptyList())
+        );
+    }
+
+    public void notifyUserSelectACategoryToRemove() {
+        JOptionPane.showMessageDialog(
+                this.viewFrame, "Select a category to remove before clicking the button",
+                "Unselected category", JOptionPane.WARNING_MESSAGE
+        );
+    }
+
+    public void notifyUserCannotRemoveLogicalCategory() {
+        JOptionPane.showMessageDialog(
+                this.viewFrame, "Cannot remove 'ALL' or 'Uncategorized' logical category.",
+                "Failed to remove category", JOptionPane.WARNING_MESSAGE
         );
     }
 }

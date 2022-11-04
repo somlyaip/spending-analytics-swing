@@ -49,6 +49,11 @@ public class DevMockTransactionLoader implements ITransactionLoader {
                     .seller("OMV Fuel Station")
                     .amount(new BigDecimal(18_012))
                     .date(LocalDate.now())
+                    .build(),
+            MoneyTransaction.builder()
+                    .seller("Sony Play Station")
+                    .amount(new BigDecimal(28_000))
+                    .date(LocalDate.now())
                     .build()
         );
     }

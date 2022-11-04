@@ -1,9 +1,12 @@
 package hu.somlyaip.pets.spendinganalytics.swing;
 
-import hu.somlyaip.pets.spendinganalytics.swing.categories.Category;
-import hu.somlyaip.pets.spendinganalytics.swing.categories.ICategoriesUpdatedObserver;
-import hu.somlyaip.pets.spendinganalytics.swing.categories.ICategoryRepo;
-import hu.somlyaip.pets.spendinganalytics.swing.categories.ISelectedCategoryUpdatedObserver;
+import hu.somlyaip.pets.spendinganalytics.swing.categories.dto.AllTransactions;
+import hu.somlyaip.pets.spendinganalytics.swing.categories.dto.Category;
+import hu.somlyaip.pets.spendinganalytics.swing.categories.dto.ISelectableCategory;
+import hu.somlyaip.pets.spendinganalytics.swing.categories.dto.Uncategorized;
+import hu.somlyaip.pets.spendinganalytics.swing.categories.observer.ICategoriesUpdatedObserver;
+import hu.somlyaip.pets.spendinganalytics.swing.categories.observer.ISelectedCategoryUpdatedObserver;
+import hu.somlyaip.pets.spendinganalytics.swing.categories.persistence.ICategoryRepo;
 import hu.somlyaip.pets.spendinganalytics.swing.transaction.ITransactionLoader;
 import hu.somlyaip.pets.spendinganalytics.swing.transaction.ITransactionsLoadedObserver;
 import hu.somlyaip.pets.spendinganalytics.swing.transaction.MoneyTransaction;
@@ -11,6 +14,7 @@ import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @author somlyaip
@@ -22,8 +26,8 @@ public class AnalyticsModel {
     private final ICategoryRepo categoryRepo;
 
     private List<MoneyTransaction> transactions;
-    private final Map<Category, List<MoneyTransaction>> mapCategoryToTransactions;
-    private Category selectedCategory;
+    private final Map<ISelectableCategory, List<MoneyTransaction>> mapCategoryToTransactions;
+    private ISelectableCategory selectedCategory;
 
     private final List<ITransactionsLoadedObserver> transactionsLoadedObservers;
     private final List<ICategoriesUpdatedObserver> categoriesUpdatedObservers;
@@ -53,23 +57,30 @@ public class AnalyticsModel {
 
     public void loadTransactionDataFile(File transactionDataFile) {
         transactions = transactionLoader.loadTransactionsFrom(transactionDataFile);
-        rebuildMapCategoryToTransactions();
         notifyTransactionLoadedObservers(transactionDataFile);
+
+        rebuildMapCategoryToTransactions();
+        notifyCategoriesUpdatedObservers();
     }
 
     private void rebuildMapCategoryToTransactions() {
-        Set<Category> categories = new HashSet<>(mapCategoryToTransactions.keySet());
+        List<Category> categories = getCategories();
         mapCategoryToTransactions.clear();
+        mapCategoryToTransactions.put(AllTransactions.getInstance(), new ArrayList<>());
+        mapCategoryToTransactions.put(Uncategorized.getInstance(), new ArrayList<>());
         for (MoneyTransaction transaction : transactions) {
-            for (Category category : categories) {
-                if (category.contains(transaction)) {
-                    if (! mapCategoryToTransactions.containsKey(category)) {
-                        mapCategoryToTransactions.put(category, new ArrayList<>());
-                    }
-                    mapCategoryToTransactions.get(category).add(transaction);
-                    break;
+            Optional<Category> matchedCategoryOptional = categories.stream().
+                    filter(c -> c.contains(transaction)).findFirst();
+            if (matchedCategoryOptional.isPresent()) {
+                Category matchedCategory = matchedCategoryOptional.get();
+                if (! mapCategoryToTransactions.containsKey(matchedCategory)) {
+                    mapCategoryToTransactions.put(matchedCategory, new ArrayList<>());
                 }
+                mapCategoryToTransactions.get(matchedCategory).add(transaction);
+            } else {
+                mapCategoryToTransactions.get(Uncategorized.getInstance()).add(transaction);
             }
+            mapCategoryToTransactions.get(AllTransactions.getInstance()).add(transaction);
         }
     }
 
@@ -81,6 +92,13 @@ public class AnalyticsModel {
         categoriesUpdatedObservers.forEach(
                 o -> o.onCategoriesModified(mapCategoryToTransactions.keySet().stream().toList())
         );
+    }
+
+    private List<Category> getCategories() {
+        return mapCategoryToTransactions.keySet().stream()
+                .filter(c -> c instanceof Category)
+                .map(c -> (Category) c)
+                .collect(Collectors.toList());
     }
 
     public void registerSelectedCategoryUpdatedObserver(
@@ -98,13 +116,35 @@ public class AnalyticsModel {
         notifyCategoriesUpdatedObservers();
     }
 
-    public void updateSelectedCategory(Category selectedCategory) {
+    public void updateSelectedCategory(ISelectableCategory selectedCategory) {
         this.selectedCategory = selectedCategory;
         notifySelectedCategoryUpdatedObservers();
     }
 
-    public Optional<List<MoneyTransaction>> getTransactionsOf(Category category) {
+    public Optional<List<MoneyTransaction>> getTransactionsOf(ISelectableCategory category) {
         List<MoneyTransaction> moneyTransactions = mapCategoryToTransactions.get(category);
         return Optional.ofNullable(moneyTransactions);
+    }
+
+    public void saveNewCategory(Category newCategory) {
+        mapCategoryToTransactions.put(newCategory, new ArrayList<>());
+        categoryRepo.save(getCategories());
+        notifyCategoriesUpdatedObservers();
+    }
+
+    public boolean hasSelectedCategory() {
+        return selectedCategory != null;
+    }
+
+    public void removeSelectedCategory() throws CannotRemoveLogicalCategoryException {
+        if (! (selectedCategory instanceof Category)) {
+            throw new CannotRemoveLogicalCategoryException(
+                    "Cannot remove an instance of '%s'".formatted(selectedCategory.getClass().toGenericString())
+            );
+        }
+
+        mapCategoryToTransactions.remove(selectedCategory);
+        rebuildMapCategoryToTransactions();
+        notifyCategoriesUpdatedObservers();
     }
 }

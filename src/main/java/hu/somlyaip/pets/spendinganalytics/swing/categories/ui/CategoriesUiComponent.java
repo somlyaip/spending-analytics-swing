@@ -1,6 +1,8 @@
-package hu.somlyaip.pets.spendinganalytics.swing.categories;
+package hu.somlyaip.pets.spendinganalytics.swing.categories.ui;
 
 import hu.somlyaip.pets.spendinganalytics.swing.AnalyticsModel;
+import hu.somlyaip.pets.spendinganalytics.swing.IAnalyticsController;
+import hu.somlyaip.pets.spendinganalytics.swing.categories.dto.ISelectableCategory;
 
 import javax.swing.*;
 import java.awt.*;
@@ -14,19 +16,38 @@ import java.util.Map;
  */
 public class CategoriesUiComponent extends JPanel {
     private final AnalyticsModel model;
+    private final IAnalyticsController controller;
 
-    private final Map<Category, CategoryToggleButton> mapCategoryToToggleButton;
+    private final JPanel categoriesPanel;
 
+    private final Map<ISelectableCategory, CategoryToggleButton> mapCategoryToToggleButton;
     private CategoryToggleButton lastSelectedToggleButton;
 
-    public CategoriesUiComponent(AnalyticsModel model) {
-        super(new FlowLayout(FlowLayout.LEFT, 5, 5));
+    public CategoriesUiComponent(AnalyticsModel model, IAnalyticsController controller) {
+        super(new GridLayout(2, 1));
+
         this.model = model;
+        this.controller = controller;
         this.mapCategoryToToggleButton = new HashMap<>();
+
+        this.categoriesPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 1, 1));
+        add(createCommandButtonsPanel());
+        add(categoriesPanel);
     }
 
-    public void updateCategories(List<Category> categories) {
-        removeAll();
+    private JPanel createCommandButtonsPanel() {
+        JPanel panel = new JPanel(new FlowLayout(FlowLayout.LEFT, 1, 1));
+        JButton buttonAdd = new JButton("+");
+        buttonAdd.addActionListener(e -> controller.askToAndAddNewCategory());
+        JButton buttonRemove = new JButton("-");
+        buttonRemove.addActionListener(e -> controller.removeSelectedCategory());
+        panel.add(buttonAdd);
+        panel.add(buttonRemove);
+        return panel;
+    }
+
+    public void updateCategories(List<ISelectableCategory> categories) {
+        categoriesPanel.removeAll();
         categories.forEach(category -> {
             CategoryToggleButton categoryToggleButton = new CategoryToggleButton(
                     category,
@@ -48,7 +69,10 @@ public class CategoriesUiComponent extends JPanel {
                         lastSelectedToggleButton = null;
                     });
             mapCategoryToToggleButton.put(category, categoryToggleButton);
-            add(categoryToggleButton);
+            categoriesPanel.add(categoryToggleButton, BorderLayout.PAGE_START);
         });
+        // Refresh pane
+        revalidate();
+        repaint();
     }
 }
