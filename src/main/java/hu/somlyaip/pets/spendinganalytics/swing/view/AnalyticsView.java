@@ -5,7 +5,7 @@ import hu.somlyaip.pets.spendinganalytics.swing.AnalyticsModel;
 import hu.somlyaip.pets.spendinganalytics.swing.categories.dto.ISelectableCategory;
 import hu.somlyaip.pets.spendinganalytics.swing.categories.observer.ICategoriesUpdatedObserver;
 import hu.somlyaip.pets.spendinganalytics.swing.categories.observer.ISelectedCategoryUpdatedObserver;
-import hu.somlyaip.pets.spendinganalytics.swing.categories.ui.CategoriesUiComponent;
+import hu.somlyaip.pets.spendinganalytics.swing.categories.view.CategoriesUiComponent;
 import hu.somlyaip.pets.spendinganalytics.swing.datafile.DataFileUiComponent;
 import hu.somlyaip.pets.spendinganalytics.swing.transaction.ITransactionsLoadedObserver;
 import hu.somlyaip.pets.spendinganalytics.swing.transaction.MoneyTransaction;
@@ -126,5 +126,9 @@ public class AnalyticsView
                 this.viewFrame, "Cannot remove 'ALL' or 'Uncategorized' logical category.",
                 "Failed to remove category", JOptionPane.WARNING_MESSAGE
         );
+    }
+
+    public void selectAllCategories() {
+        categoriesUiComponent.selectAllCategories();
     }
 }

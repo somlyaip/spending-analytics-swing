@@ -1,7 +1,8 @@
-package hu.somlyaip.pets.spendinganalytics.swing.categories.ui;
+package hu.somlyaip.pets.spendinganalytics.swing.categories.view;
 
 import hu.somlyaip.pets.spendinganalytics.swing.AnalyticsModel;
 import hu.somlyaip.pets.spendinganalytics.swing.IAnalyticsController;
+import hu.somlyaip.pets.spendinganalytics.swing.categories.dto.AllTransactions;
 import hu.somlyaip.pets.spendinganalytics.swing.categories.dto.ISelectableCategory;
 
 import javax.swing.*;
@@ -58,7 +59,7 @@ public class CategoriesUiComponent extends JPanel {
                         CategoryToggleButton newSelectedToggleButton = mapCategoryToToggleButton.get(selectedCategory);
                         if (lastSelectedToggleButton != null &&
                                 lastSelectedToggleButton != newSelectedToggleButton) {
-                            lastSelectedToggleButton.unselect();
+                            lastSelectedToggleButton.setUiUnselected();
                         }
                         lastSelectedToggleButton = newSelectedToggleButton;
                     },
@@ -74,5 +75,9 @@ public class CategoriesUiComponent extends JPanel {
         // Refresh pane
         revalidate();
         repaint();
+    }
+
+    public void selectAllCategories() {
+        mapCategoryToToggleButton.get(AllTransactions.getInstance()).select();
     }
 }

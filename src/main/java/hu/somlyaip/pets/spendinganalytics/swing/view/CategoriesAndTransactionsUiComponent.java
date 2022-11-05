@@ -1,6 +1,6 @@
 package hu.somlyaip.pets.spendinganalytics.swing.view;
 
-import hu.somlyaip.pets.spendinganalytics.swing.categories.ui.CategoriesUiComponent;
+import hu.somlyaip.pets.spendinganalytics.swing.categories.view.CategoriesUiComponent;
 import hu.somlyaip.pets.spendinganalytics.swing.transaction.TransactionsUiComponent;
 
 import javax.swing.*;

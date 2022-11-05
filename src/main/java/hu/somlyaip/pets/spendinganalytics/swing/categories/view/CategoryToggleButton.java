@@ -1,4 +1,4 @@
-package hu.somlyaip.pets.spendinganalytics.swing.categories.ui;
+package hu.somlyaip.pets.spendinganalytics.swing.categories.view;
 
 import hu.somlyaip.pets.spendinganalytics.swing.categories.dto.ISelectableCategory;
 
@@ -11,6 +11,8 @@ import java.util.function.Consumer;
 public class CategoryToggleButton extends JButton {
 
     private final ISelectableCategory category;
+    private final Consumer<ISelectableCategory> onCategorySelected;
+    private final Consumer<ISelectableCategory> onCategoryUnselected;
     private boolean isSelected;
 
     private final Font defaultFont;
@@ -21,6 +23,8 @@ public class CategoryToggleButton extends JButton {
             Consumer<ISelectableCategory> onCategoryUnselected
     ) {
         this.category = category;
+        this.onCategorySelected = onCategorySelected;
+        this.onCategoryUnselected = onCategoryUnselected;
 
         setText(category.getName());
 
@@ -30,10 +34,8 @@ public class CategoryToggleButton extends JButton {
             // check last state
             if (isSelected) {
                 unselect();
-                onCategoryUnselected.accept(category);
             } else {
                 select();
-                onCategorySelected.accept(category);
             }
         });
     }
@@ -46,7 +48,17 @@ public class CategoryToggleButton extends JButton {
         return originalFont.deriveFont(attributes);
     }
 
-    private void select() {
+    void select() {
+        setUiSelected();
+        onCategorySelected.accept(category);
+    }
+
+    private void unselect() {
+        setUiUnselected();
+        onCategoryUnselected.accept(category);
+    }
+
+    private void setUiSelected() {
         if (isSelected) {
             throw new IllegalStateException(
                     "'%s' CategoryToggleButton is already in 'selected' state".formatted(category.getName())
@@ -56,7 +68,7 @@ public class CategoryToggleButton extends JButton {
         setFont(selectedFont);
     }
 
-    void unselect() {
+    void setUiUnselected() {
         if (! isSelected) {
             throw new IllegalStateException(
                     "'%s' CategoryToggleButton is already in 'unselected' state".formatted(category.getName())

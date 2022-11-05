@@ -38,9 +38,13 @@ public class AnalyticsController implements IAnalyticsController {
     @Override
     public void browseTransactionDataFile() {
         view.browseTransactionDataFile().ifPresent(file -> new Thread(() -> {
+            model.loadCategories();
+
             view.disableBrowseButton();
             model.loadTransactionDataFile(file);
             view.enableBrowseButton();
+
+            view.selectAllCategories();
         }).start());
     }
 

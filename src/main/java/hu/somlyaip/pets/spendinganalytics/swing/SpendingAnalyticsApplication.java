@@ -10,11 +10,9 @@ import java.awt.*;
 public class SpendingAnalyticsApplication implements CommandLineRunner {
 
     private final AnalyticsController controller;
-    private final AnalyticsModel model;
 
-    public SpendingAnalyticsApplication(AnalyticsController controller, AnalyticsModel model) {
+    public SpendingAnalyticsApplication(AnalyticsController controller) {
         this.controller = controller;
-        this.model = model;
     }
 
     public static void main(String[] args) {
@@ -25,9 +23,6 @@ public class SpendingAnalyticsApplication implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
-        EventQueue.invokeLater(() -> {
-            controller.createAndInitializeView();
-            model.loadCategories();
-        });
+        EventQueue.invokeLater(controller::createAndInitializeView);
     }
 }
