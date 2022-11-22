@@ -69,4 +69,19 @@ public class AnalyticsController implements IAnalyticsController {
             view.notifyUserCannotRemoveLogicalCategory();
         }
     }
+
+    @Override
+    public void askCategoryToSelectAndAddSelectedTransactionToIt() {
+        if (! model.hasSelectedTransaction()) {
+            view.notifyUserShouldSelectAnUncategorizedTransactionToAddItToAnyCategory();
+        }
+
+        view.askCategoryToSelect().ifPresent(selectedCategory -> {
+            throw new RuntimeException("Not implemented");
+        });
+    }
+
+    public void removeSelectedTransactionFromSelectedCategory() {
+        throw new RuntimeException("Not implemented");
+    }
 }

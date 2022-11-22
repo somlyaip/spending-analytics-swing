@@ -8,4 +8,6 @@ public interface IAnalyticsController {
     void browseTransactionDataFile();
     void askToAndAddNewCategory();
     void removeSelectedCategory();
+    void askCategoryToSelectAndAddSelectedTransactionToIt();
+    void removeSelectedTransactionFromSelectedCategory();
 }

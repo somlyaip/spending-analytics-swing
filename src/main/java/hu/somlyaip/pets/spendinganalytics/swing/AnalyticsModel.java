@@ -94,7 +94,7 @@ public class AnalyticsModel {
         );
     }
 
-    private List<Category> getCategories() {
+    public List<Category> getCategories() {
         return mapCategoryToTransactions.keySet().stream()
                 .filter(c -> c instanceof Category)
                 .map(c -> (Category) c)
@@ -146,5 +146,10 @@ public class AnalyticsModel {
         mapCategoryToTransactions.remove(selectedCategory);
         rebuildMapCategoryToTransactions();
         notifyCategoriesUpdatedObservers();
+    }
+
+    public boolean hasSelectedTransaction() {
+        // TODO: implement it
+        return true;
     }
 }

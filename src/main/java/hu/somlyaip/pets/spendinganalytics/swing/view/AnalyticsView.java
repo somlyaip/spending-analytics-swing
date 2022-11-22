@@ -3,9 +3,11 @@ package hu.somlyaip.pets.spendinganalytics.swing.view;
 import hu.somlyaip.pets.spendinganalytics.swing.AnalyticsController;
 import hu.somlyaip.pets.spendinganalytics.swing.AnalyticsModel;
 import hu.somlyaip.pets.spendinganalytics.swing.categories.dto.ISelectableCategory;
+import hu.somlyaip.pets.spendinganalytics.swing.categories.dto.Uncategorized;
 import hu.somlyaip.pets.spendinganalytics.swing.categories.observer.ICategoriesUpdatedObserver;
 import hu.somlyaip.pets.spendinganalytics.swing.categories.observer.ISelectedCategoryUpdatedObserver;
 import hu.somlyaip.pets.spendinganalytics.swing.categories.view.CategoriesUiComponent;
+import hu.somlyaip.pets.spendinganalytics.swing.categories.view.SelectCategoryModal;
 import hu.somlyaip.pets.spendinganalytics.swing.datafile.DataFileUiComponent;
 import hu.somlyaip.pets.spendinganalytics.swing.transaction.ITransactionsLoadedObserver;
 import hu.somlyaip.pets.spendinganalytics.swing.transaction.MoneyTransaction;
@@ -15,6 +17,7 @@ import org.springframework.util.StringUtils;
 import javax.swing.*;
 import java.awt.*;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -36,6 +39,7 @@ public class AnalyticsView
     private DataFileUiComponent dataFileUiComponent;
     private CategoriesUiComponent categoriesUiComponent;
     private TransactionsUiComponent transactionsUiComponent;
+    private CategoriesAndTransactionsUiComponent categoriesAndTransactionsUiComponent;
 
     public AnalyticsView(AnalyticsModel model, AnalyticsController controller) {
         this.model = model;
@@ -51,7 +55,12 @@ public class AnalyticsView
 
         this.categoriesUiComponent = new CategoriesUiComponent(model, controller);
         this.transactionsUiComponent = new TransactionsUiComponent(hufFormatter, dateFormatter);
-        rootPane.add(new CategoriesAndTransactionsUiComponent(this.categoriesUiComponent, this.transactionsUiComponent));
+        this.categoriesAndTransactionsUiComponent = new CategoriesAndTransactionsUiComponent(
+                this.categoriesUiComponent, this.transactionsUiComponent,
+                e -> controller.askCategoryToSelectAndAddSelectedTransactionToIt(),
+                e -> controller.removeSelectedTransactionFromSelectedCategory()
+        );
+        rootPane.add(categoriesAndTransactionsUiComponent);
 
         JFrame.setDefaultLookAndFeelDecorated(true);
     }
@@ -112,6 +121,20 @@ public class AnalyticsView
         transactionsUiComponent.updateTransactions(
                 model.getTransactionsOf(selectedCategory).orElse(Collections.emptyList())
         );
+
+        if (selectedCategory != null) {
+            this.categoriesAndTransactionsUiComponent.setCategoryName(selectedCategory.getName());
+        } else {
+            this.categoriesAndTransactionsUiComponent.setCategoryName(null);
+        }
+
+        if (Uncategorized.getInstance().equals(selectedCategory)) {
+            this.categoriesAndTransactionsUiComponent.enableAddToCategory();
+            this.categoriesAndTransactionsUiComponent.disableRemoveFromCategory();
+        } else {
+            this.categoriesAndTransactionsUiComponent.disableAddToCategory();
+            this.categoriesAndTransactionsUiComponent.enableRemoveFromCategory();
+        }
     }
 
     public void notifyUserSelectACategoryToRemove() {
@@ -128,7 +151,22 @@ public class AnalyticsView
         );
     }
 
+    public void notifyUserShouldSelectAnUncategorizedTransactionToAddItToAnyCategory() {
+        JOptionPane.showMessageDialog(
+                this.viewFrame, "Select an uncategorized transaction to add it to a category.",
+                "Failed to add transaction", JOptionPane.WARNING_MESSAGE
+        );
+    }
+
     public void selectAllCategories() {
         categoriesUiComponent.selectAllCategories();
+    }
+
+    public Optional<ISelectableCategory> askCategoryToSelect() {
+        var modal = new SelectCategoryModal(
+                viewFrame,
+                new ArrayList<>(model.getCategories())
+        );
+        return modal.getSelectedCategory();
     }
 }
