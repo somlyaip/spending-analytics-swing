@@ -4,6 +4,7 @@ import hu.somlyaip.pets.spendinganalytics.swing.categories.dto.ISelectableCatego
 
 import java.util.List;
 
+@FunctionalInterface
 public interface ICategoriesUpdatedObserver {
     void onCategoriesModified(List<ISelectableCategory> categories);
 }
