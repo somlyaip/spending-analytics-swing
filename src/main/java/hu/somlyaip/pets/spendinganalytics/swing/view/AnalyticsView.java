@@ -2,6 +2,7 @@ package hu.somlyaip.pets.spendinganalytics.swing.view;
 
 import hu.somlyaip.pets.spendinganalytics.swing.AnalyticsController;
 import hu.somlyaip.pets.spendinganalytics.swing.AnalyticsModel;
+import hu.somlyaip.pets.spendinganalytics.swing.categories.dto.AllTransactions;
 import hu.somlyaip.pets.spendinganalytics.swing.categories.dto.ISelectableCategory;
 import hu.somlyaip.pets.spendinganalytics.swing.categories.dto.Uncategorized;
 import hu.somlyaip.pets.spendinganalytics.swing.categories.observer.ICategoriesUpdatedObserver;
@@ -122,18 +123,27 @@ public class AnalyticsView
                 model.getTransactionsOf(selectedCategory).orElse(Collections.emptyList())
         );
 
-        if (selectedCategory != null) {
-            this.categoriesAndTransactionsUiComponent.setCategoryName(selectedCategory.getName());
-        } else {
+        if (selectedCategory == null) {
             this.categoriesAndTransactionsUiComponent.setCategoryName(null);
-        }
 
-        if (Uncategorized.getInstance().equals(selectedCategory)) {
-            this.categoriesAndTransactionsUiComponent.enableAddToCategory();
-            this.categoriesAndTransactionsUiComponent.disableRemoveFromCategory();
-        } else {
             this.categoriesAndTransactionsUiComponent.disableAddToCategory();
-            this.categoriesAndTransactionsUiComponent.enableRemoveFromCategory();
+            this.categoriesAndTransactionsUiComponent.disableRemoveFromCategory();
+
+        } else {
+            this.categoriesAndTransactionsUiComponent.setCategoryName(selectedCategory.getName());
+
+            if (Uncategorized.getInstance().equals(selectedCategory)) {
+                this.categoriesAndTransactionsUiComponent.enableAddToCategory();
+                this.categoriesAndTransactionsUiComponent.disableRemoveFromCategory();
+
+            } else if (AllTransactions.getInstance().equals(selectedCategory)) {
+                this.categoriesAndTransactionsUiComponent.disableAddToCategory();
+                this.categoriesAndTransactionsUiComponent.disableRemoveFromCategory();
+
+            } else {
+                this.categoriesAndTransactionsUiComponent.disableAddToCategory();
+                this.categoriesAndTransactionsUiComponent.enableRemoveFromCategory();
+            }
         }
     }
 
