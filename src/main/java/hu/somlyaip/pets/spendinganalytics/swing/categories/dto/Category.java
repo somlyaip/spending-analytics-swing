@@ -10,11 +10,14 @@ import java.util.Collection;
  * @author somlyaip
  * created at 2022. 10. 22.
  */
+@NoArgsConstructor
+@AllArgsConstructor
 @Builder
 @Getter
 @EqualsAndHashCode
 @ToString
 public class Category implements ISelectableCategory {
+
     private String name;
     // We need a mutable list
     private ArrayList<String> sellers;

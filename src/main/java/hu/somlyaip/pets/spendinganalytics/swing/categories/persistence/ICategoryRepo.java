@@ -10,5 +10,5 @@ import java.util.List;
  */
 public interface ICategoryRepo {
     List<Category> load();
-    void save(Iterable<Category> categories);
+    void save(List<Category> categories);
 }
