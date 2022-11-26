@@ -7,6 +7,7 @@ import java.util.List;
  * @author somlyaip
  * created at 2022. 10. 19.
  */
+@FunctionalInterface
 public interface ITransactionsLoadedObserver {
     void onLoadingTransactionsCompleted(File transactionDataFile, List<MoneyTransaction> transactions);
 }
