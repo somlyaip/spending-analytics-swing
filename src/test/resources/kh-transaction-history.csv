@@ -1,0 +1,4 @@
+könyvelés dátuma	tranzakció azonosító 	típus	könyvelési számla	könyvelési számla elnevezése	partner számla	partner elnevezése	összeg	összeg devizaneme	közlemény	tranzakciót indító tényleges fizető fél neve 	a tényleges fizető azonosítójának típusa 	tranzakciót indító tényleges fizető fél azonosítója	tényleges kedvezményezett neve 	tényleges kedvezményezett azonosítójának típusa	tényleges kedvezményezett azonosítója 	partnerek közti egyedi azonosító 	szervezetazonosító	átutalás jogcíme 	átutalás jogcím kategóriája 	partner másodlagos számlaazonosító 
+2022.04.14	123456******7890	Vásárlás belföldi kereskedőnél	x-y-z	John Doe		OMV 1986	-5980	HUF
+2022.04.09	123456******7890	Vásárlás belföldi kereskedőnél	x-y-z	John Doe		AUCHAN SOROKSAR       BUDAPEST	-2596	HUF
+2022.04.11	123456******7890	Jóváírás	x-y-z	John Doe		PAYPAL *PLAYSTATION   35314369001	36065	HUF
