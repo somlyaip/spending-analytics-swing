@@ -7,12 +7,15 @@ import hu.somlyaip.pets.spendinganalytics.swing.categories.dto.Uncategorized;
 import hu.somlyaip.pets.spendinganalytics.swing.categories.observer.ICategoriesUpdatedObserver;
 import hu.somlyaip.pets.spendinganalytics.swing.categories.observer.ISelectedCategoryUpdatedObserver;
 import hu.somlyaip.pets.spendinganalytics.swing.categories.persistence.ICategoryRepo;
-import hu.somlyaip.pets.spendinganalytics.swing.transaction.persistence.ITransactionLoader;
-import hu.somlyaip.pets.spendinganalytics.swing.transaction.observer.ITransactionsLoadedObserver;
+import hu.somlyaip.pets.spendinganalytics.swing.chart.PieChartSeries;
 import hu.somlyaip.pets.spendinganalytics.swing.transaction.MoneyTransaction;
+import hu.somlyaip.pets.spendinganalytics.swing.transaction.observer.ITransactionsLoadedObserver;
+import hu.somlyaip.pets.spendinganalytics.swing.transaction.persistence.ITransactionLoader;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
+import java.math.BigDecimal;
+import java.math.MathContext;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -169,5 +172,32 @@ public class AnalyticsModel {
 
     ISelectableCategory getSelectedCategory() {
         return selectedCategory;
+    }
+
+    public List<PieChartSeries> getCategoriesPieChartSeriesList() {
+        BigDecimal overallAmount = mapCategoryToTransactions.entrySet().stream()
+                .filter(e -> ! (e.getKey() instanceof AllTransactions))
+                .map(e -> e.getValue().stream()
+                        .map(MoneyTransaction::getAmount)
+                        .reduce(BigDecimal.ZERO, BigDecimal::add))
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+        if (overallAmount.equals(BigDecimal.ZERO)) {
+            return Collections.emptyList();
+        }
+
+        final var precision = new MathContext(2);
+        return mapCategoryToTransactions.entrySet().stream()
+                .filter(e -> ! (e.getKey() instanceof AllTransactions))
+                .map(e -> {
+                    BigDecimal sumAmountOfCategory = e.getValue().stream()
+                            .map(MoneyTransaction::getAmount)
+                            .reduce(BigDecimal.ZERO, BigDecimal::add);
+                    return new PieChartSeries(
+                            e.getKey().getName(),
+                            sumAmountOfCategory.divide(overallAmount, precision)
+                                    .multiply(new BigDecimal(100))
+                    );
+                })
+                .collect(Collectors.toList());
     }
 }

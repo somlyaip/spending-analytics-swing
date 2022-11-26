@@ -10,6 +10,7 @@ import hu.somlyaip.pets.spendinganalytics.swing.categories.observer.ICategoriesU
 import hu.somlyaip.pets.spendinganalytics.swing.categories.observer.ISelectedCategoryUpdatedObserver;
 import hu.somlyaip.pets.spendinganalytics.swing.categories.view.CategoriesUiComponent;
 import hu.somlyaip.pets.spendinganalytics.swing.categories.view.SelectCategoryModal;
+import hu.somlyaip.pets.spendinganalytics.swing.chart.ChartUiComponent;
 import hu.somlyaip.pets.spendinganalytics.swing.datafile.DataFileUiComponent;
 import hu.somlyaip.pets.spendinganalytics.swing.transaction.observer.ISelectedTransactionsChangedObserver;
 import hu.somlyaip.pets.spendinganalytics.swing.transaction.observer.ITransactionsLoadedObserver;
@@ -44,6 +45,7 @@ public class AnalyticsView implements
     private CategoriesUiComponent categoriesUiComponent;
     private TransactionsUiComponent transactionsUiComponent;
     private CategoriesAndTransactionsUiComponent categoriesAndTransactionsUiComponent;
+    private ChartUiComponent chartUiComponent;
 
     public AnalyticsView(AnalyticsModel model, AnalyticsController controller) {
         this.model = model;
@@ -66,7 +68,10 @@ public class AnalyticsView implements
                 e -> controller.askCategoryToSelectAndAddSelectedTransactionToIt(),
                 e -> controller.removeSelectedTransactionFromSelectedCategory()
         );
-        rootPane.add(categoriesAndTransactionsUiComponent);
+        rootPane.add(categoriesAndTransactionsUiComponent, BorderLayout.LINE_START);
+
+        chartUiComponent = new ChartUiComponent(Collections.emptyList());
+        rootPane.add(chartUiComponent, BorderLayout.CENTER);
 
         JFrame.setDefaultLookAndFeelDecorated(true);
     }
@@ -201,5 +206,9 @@ public class AnalyticsView implements
 
     public void updateTransactionsTable(List<MoneyTransaction> actualTransactions) {
         transactionsUiComponent.updateTransactions(actualTransactions);
+    }
+
+    public void updateChart() {
+        chartUiComponent.updateChart(model.getCategoriesPieChartSeriesList());
     }
 }

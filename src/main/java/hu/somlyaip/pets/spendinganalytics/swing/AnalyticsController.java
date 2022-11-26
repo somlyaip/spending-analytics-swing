@@ -46,6 +46,7 @@ public class AnalyticsController implements IAnalyticsController {
             view.enableBrowseButton();
 
             view.selectAllCategories();
+            view.updateChart();
         }).start());
     }
 
@@ -54,6 +55,7 @@ public class AnalyticsController implements IAnalyticsController {
         view.askToNewCategoryName().ifPresent(categoryName -> {
             var newCategory = new Category(categoryName, new ArrayList<>());
             model.saveNewCategory(newCategory);
+            view.updateChart();
         });
     }
 
@@ -69,6 +71,7 @@ public class AnalyticsController implements IAnalyticsController {
         } catch (CannotRemoveLogicalCategoryException e) {
             view.notifyUserCannotRemoveLogicalCategory();
         }
+        view.updateChart();
     }
 
     @Override
@@ -82,6 +85,7 @@ public class AnalyticsController implements IAnalyticsController {
         view.updateTransactionsTable(
                 model.getTransactionsOf(model.getSelectedCategory()).orElse(Collections.emptyList())
         );
+        view.updateChart();
     }
 
     public void removeSelectedTransactionFromSelectedCategory() {
@@ -94,5 +98,6 @@ public class AnalyticsController implements IAnalyticsController {
         view.updateTransactionsTable(
                 model.getTransactionsOf(model.getSelectedCategory()).orElse(Collections.emptyList())
         );
+        view.updateChart();
     }
 }
