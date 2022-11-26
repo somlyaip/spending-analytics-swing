@@ -53,8 +53,11 @@ public class AnalyticsController implements IAnalyticsController {
     @Override
     public void askToAndAddNewCategory() {
         view.askToNewCategoryName().ifPresent(categoryName -> {
-            var newCategory = new Category(categoryName, new ArrayList<>());
-            model.saveNewCategory(newCategory);
+            var newCategory = Category.builder()
+                    .name(categoryName)
+                    .sellers(new ArrayList<>())
+                    .build();
+            model.addNewCategory(newCategory);
             view.updateChart();
         });
     }

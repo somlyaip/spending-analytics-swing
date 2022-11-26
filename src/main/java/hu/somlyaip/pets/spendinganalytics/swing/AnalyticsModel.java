@@ -130,10 +130,14 @@ public class AnalyticsModel {
         return Optional.ofNullable(moneyTransactions);
     }
 
-    public void saveNewCategory(Category newCategory) {
+    public void addNewCategory(Category newCategory) {
         mapCategoryToTransactions.put(newCategory, new ArrayList<>());
-        categoryRepo.save(getCategories());
+        saveCategories();
         notifyCategoriesUpdatedObservers();
+    }
+
+    private void saveCategories() {
+        categoryRepo.save(getCategories());
     }
 
     public boolean hasSelectedCategory() {
@@ -148,6 +152,7 @@ public class AnalyticsModel {
         }
 
         mapCategoryToTransactions.remove(selectedCategory);
+        saveCategories();
         rebuildMapCategoryToTransactions();
         notifyCategoriesUpdatedObservers();
     }
@@ -159,11 +164,22 @@ public class AnalyticsModel {
     public void addSelectedTransactionTo(Category category) {
         mapCategoryToTransactions.get(Uncategorized.getInstance()).removeAll(selectedTransactions);
         mapCategoryToTransactions.get(category).addAll(selectedTransactions);
+        category.addSellers(getSelectedTransactionsSellers());
+        saveCategories();
+    }
+
+    private List<String> getSelectedTransactionsSellers() {
+        return selectedTransactions.stream().map(MoneyTransaction::getSeller).collect(Collectors.toList());
     }
 
     public void removeSelectedTransactionFromSelectedCategory() {
+        if (! (selectedCategory instanceof Category)) {
+            throw new RuntimeException("Cannot remove from category '%s'".formatted(selectedCategory.getClass()));
+        }
         mapCategoryToTransactions.get(selectedCategory).removeAll(selectedTransactions);
+        ((Category) selectedCategory).removeSellers(getSelectedTransactionsSellers());
         mapCategoryToTransactions.get(Uncategorized.getInstance()).addAll(selectedTransactions);
+        saveCategories();
     }
 
     public void updateSelectedTransactions(List<MoneyTransaction> selectedTransactions) {

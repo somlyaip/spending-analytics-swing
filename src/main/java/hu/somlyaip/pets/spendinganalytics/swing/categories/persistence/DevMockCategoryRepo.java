@@ -3,6 +3,7 @@ package hu.somlyaip.pets.spendinganalytics.swing.categories.persistence;
 import hu.somlyaip.pets.spendinganalytics.swing.categories.dto.Category;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -16,11 +17,11 @@ public class DevMockCategoryRepo implements ICategoryRepo {
         return List.of(
                 Category.builder()
                         .name("Food")
-                        .sellers(List.of("Foodpanda", "Aldi"))
+                        .sellers(new ArrayList<>(List.of("Foodpanda", "Aldi")))
                         .build(),
                 Category.builder()
                         .name("Car")
-                        .sellers(List.of("OMV Fuel Station"))
+                        .sellers(new ArrayList<>(List.of("OMV Fuel Station")))
                         .build()
         );
     }
