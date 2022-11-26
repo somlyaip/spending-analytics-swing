@@ -7,6 +7,7 @@ import hu.somlyaip.pets.spendinganalytics.swing.view.HufFormatter;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 /**
  * @author somlyaip
@@ -74,14 +75,24 @@ public class AnalyticsController implements IAnalyticsController {
     public void askCategoryToSelectAndAddSelectedTransactionToIt() {
         if (! model.hasSelectedTransaction()) {
             view.notifyUserShouldSelectAnUncategorizedTransactionToAddItToAnyCategory();
+            return;
         }
 
-        view.askCategoryToSelect().ifPresent(selectedCategory -> {
-            throw new RuntimeException("Not implemented");
-        });
+        view.askCategoryToSelect().ifPresent(model::addSelectedTransactionTo);
+        view.updateTransactionsTable(
+                model.getTransactionsOf(model.getSelectedCategory()).orElse(Collections.emptyList())
+        );
     }
 
     public void removeSelectedTransactionFromSelectedCategory() {
-        throw new RuntimeException("Not implemented");
+        if (! model.hasSelectedTransaction()) {
+            view.notifyUserShouldSelectATransactionToRemove();
+            return;
+        }
+
+        model.removeSelectedTransactionFromSelectedCategory();
+        view.updateTransactionsTable(
+                model.getTransactionsOf(model.getSelectedCategory()).orElse(Collections.emptyList())
+        );
     }
 }

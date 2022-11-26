@@ -7,8 +7,8 @@ import hu.somlyaip.pets.spendinganalytics.swing.categories.dto.Uncategorized;
 import hu.somlyaip.pets.spendinganalytics.swing.categories.observer.ICategoriesUpdatedObserver;
 import hu.somlyaip.pets.spendinganalytics.swing.categories.observer.ISelectedCategoryUpdatedObserver;
 import hu.somlyaip.pets.spendinganalytics.swing.categories.persistence.ICategoryRepo;
-import hu.somlyaip.pets.spendinganalytics.swing.transaction.ITransactionLoader;
-import hu.somlyaip.pets.spendinganalytics.swing.transaction.ITransactionsLoadedObserver;
+import hu.somlyaip.pets.spendinganalytics.swing.transaction.persistence.ITransactionLoader;
+import hu.somlyaip.pets.spendinganalytics.swing.transaction.observer.ITransactionsLoadedObserver;
 import hu.somlyaip.pets.spendinganalytics.swing.transaction.MoneyTransaction;
 import org.springframework.stereotype.Component;
 
@@ -32,6 +32,7 @@ public class AnalyticsModel {
     private final List<ITransactionsLoadedObserver> transactionsLoadedObservers;
     private final List<ICategoriesUpdatedObserver> categoriesUpdatedObservers;
     private final List<ISelectedCategoryUpdatedObserver> selectedCategoryUpdatedObservers;
+    private List<MoneyTransaction> selectedTransactions;
 
     public AnalyticsModel(ITransactionLoader transactionLoader, ICategoryRepo categoryRepo) {
         this.transactionLoader = transactionLoader;
@@ -149,7 +150,24 @@ public class AnalyticsModel {
     }
 
     public boolean hasSelectedTransaction() {
-        // TODO: implement it
-        return true;
+        return ! selectedTransactions.isEmpty();
+    }
+
+    public void addSelectedTransactionTo(Category category) {
+        mapCategoryToTransactions.get(Uncategorized.getInstance()).removeAll(selectedTransactions);
+        mapCategoryToTransactions.get(category).addAll(selectedTransactions);
+    }
+
+    public void removeSelectedTransactionFromSelectedCategory() {
+        mapCategoryToTransactions.get(selectedCategory).removeAll(selectedTransactions);
+        mapCategoryToTransactions.get(Uncategorized.getInstance()).addAll(selectedTransactions);
+    }
+
+    public void updateSelectedTransactions(List<MoneyTransaction> selectedTransactions) {
+        this.selectedTransactions = selectedTransactions;
+    }
+
+    ISelectableCategory getSelectedCategory() {
+        return selectedCategory;
     }
 }

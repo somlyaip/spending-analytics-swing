@@ -1,5 +1,6 @@
-package hu.somlyaip.pets.spendinganalytics.swing.transaction;
+package hu.somlyaip.pets.spendinganalytics.swing.transaction.persistence;
 
+import hu.somlyaip.pets.spendinganalytics.swing.transaction.MoneyTransaction;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 

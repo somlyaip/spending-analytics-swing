@@ -3,6 +3,7 @@ package hu.somlyaip.pets.spendinganalytics.swing.view;
 import hu.somlyaip.pets.spendinganalytics.swing.AnalyticsController;
 import hu.somlyaip.pets.spendinganalytics.swing.AnalyticsModel;
 import hu.somlyaip.pets.spendinganalytics.swing.categories.dto.AllTransactions;
+import hu.somlyaip.pets.spendinganalytics.swing.categories.dto.Category;
 import hu.somlyaip.pets.spendinganalytics.swing.categories.dto.ISelectableCategory;
 import hu.somlyaip.pets.spendinganalytics.swing.categories.dto.Uncategorized;
 import hu.somlyaip.pets.spendinganalytics.swing.categories.observer.ICategoriesUpdatedObserver;
@@ -10,9 +11,10 @@ import hu.somlyaip.pets.spendinganalytics.swing.categories.observer.ISelectedCat
 import hu.somlyaip.pets.spendinganalytics.swing.categories.view.CategoriesUiComponent;
 import hu.somlyaip.pets.spendinganalytics.swing.categories.view.SelectCategoryModal;
 import hu.somlyaip.pets.spendinganalytics.swing.datafile.DataFileUiComponent;
-import hu.somlyaip.pets.spendinganalytics.swing.transaction.ITransactionsLoadedObserver;
+import hu.somlyaip.pets.spendinganalytics.swing.transaction.observer.ISelectedTransactionsChangedObserver;
+import hu.somlyaip.pets.spendinganalytics.swing.transaction.observer.ITransactionsLoadedObserver;
 import hu.somlyaip.pets.spendinganalytics.swing.transaction.MoneyTransaction;
-import hu.somlyaip.pets.spendinganalytics.swing.transaction.TransactionsUiComponent;
+import hu.somlyaip.pets.spendinganalytics.swing.transaction.view.TransactionsUiComponent;
 import org.springframework.util.StringUtils;
 
 import javax.swing.*;
@@ -27,8 +29,9 @@ import java.util.Optional;
  * @author somlyaip
  * created at 2022. 10. 19.
  */
-public class AnalyticsView
-        implements ITransactionsLoadedObserver, ICategoriesUpdatedObserver, ISelectedCategoryUpdatedObserver {
+public class AnalyticsView implements
+        ITransactionsLoadedObserver, ICategoriesUpdatedObserver, ISelectedCategoryUpdatedObserver,
+        ISelectedTransactionsChangedObserver {
 
     @SuppressWarnings({"FieldCanBeLocal", "unused"})
     private final AnalyticsModel model;
@@ -55,7 +58,9 @@ public class AnalyticsView
         rootPane.add(this.dataFileUiComponent, BorderLayout.PAGE_START);
 
         this.categoriesUiComponent = new CategoriesUiComponent(model, controller);
-        this.transactionsUiComponent = new TransactionsUiComponent(hufFormatter, dateFormatter);
+        this.transactionsUiComponent = new TransactionsUiComponent(
+                hufFormatter, dateFormatter, this
+        );
         this.categoriesAndTransactionsUiComponent = new CategoriesAndTransactionsUiComponent(
                 this.categoriesUiComponent, this.transactionsUiComponent,
                 e -> controller.askCategoryToSelectAndAddSelectedTransactionToIt(),
@@ -122,6 +127,7 @@ public class AnalyticsView
         transactionsUiComponent.updateTransactions(
                 model.getTransactionsOf(selectedCategory).orElse(Collections.emptyList())
         );
+        model.updateSelectedTransactions(Collections.emptyList());
 
         if (selectedCategory == null) {
             this.categoriesAndTransactionsUiComponent.setCategoryName(null);
@@ -168,15 +174,32 @@ public class AnalyticsView
         );
     }
 
+    public void notifyUserShouldSelectATransactionToRemove() {
+        JOptionPane.showMessageDialog(
+                this.viewFrame, "Select a transaction to remove it from this category.",
+                "Failed to remove transaction", JOptionPane.WARNING_MESSAGE
+        );
+    }
+
     public void selectAllCategories() {
         categoriesUiComponent.selectAllCategories();
     }
 
-    public Optional<ISelectableCategory> askCategoryToSelect() {
+    public Optional<Category> askCategoryToSelect() {
         var modal = new SelectCategoryModal(
                 viewFrame,
                 new ArrayList<>(model.getCategories())
         );
-        return modal.getSelectedCategory();
+        // There are only Category instances in this case
+        return modal.getSelectedCategory().map(selectableCategory -> (Category) selectableCategory);
+    }
+
+    @Override
+    public void onSelectedTransactionsChanged(List<MoneyTransaction> selectedTransactions) {
+        model.updateSelectedTransactions(selectedTransactions);
+    }
+
+    public void updateTransactionsTable(List<MoneyTransaction> actualTransactions) {
+        transactionsUiComponent.updateTransactions(actualTransactions);
     }
 }
