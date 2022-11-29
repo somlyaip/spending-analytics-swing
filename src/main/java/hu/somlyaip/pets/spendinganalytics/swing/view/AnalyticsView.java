@@ -11,6 +11,7 @@ import hu.somlyaip.pets.spendinganalytics.swing.categories.observer.ISelectedCat
 import hu.somlyaip.pets.spendinganalytics.swing.categories.view.CategoriesUiComponent;
 import hu.somlyaip.pets.spendinganalytics.swing.categories.view.SelectCategoryModal;
 import hu.somlyaip.pets.spendinganalytics.swing.chart.ChartUiComponent;
+import hu.somlyaip.pets.spendinganalytics.swing.datafile.DataFileChooser;
 import hu.somlyaip.pets.spendinganalytics.swing.datafile.DataFileUiComponent;
 import hu.somlyaip.pets.spendinganalytics.swing.transaction.observer.ISelectedTransactionsChangedObserver;
 import hu.somlyaip.pets.spendinganalytics.swing.transaction.observer.ITransactionsLoadedObserver;
@@ -47,6 +48,8 @@ public class AnalyticsView implements
     private CategoriesAndTransactionsUiComponent categoriesAndTransactionsUiComponent;
     private ChartUiComponent chartUiComponent;
 
+    private DataFileChooser dataFileChooser;
+
     public AnalyticsView(AnalyticsModel model, AnalyticsController controller) {
         this.model = model;
         this.controller = controller;
@@ -74,6 +77,8 @@ public class AnalyticsView implements
         rootPane.add(chartUiComponent, BorderLayout.CENTER);
 
         JFrame.setDefaultLookAndFeelDecorated(true);
+
+        dataFileChooser = new DataFileChooser();
     }
 
     private void createFrame() {
@@ -91,12 +96,7 @@ public class AnalyticsView implements
     }
 
     public Optional<File> browseTransactionDataFile() {
-        JFileChooser fileChooser = new JFileChooser();
-        if (fileChooser.showOpenDialog(viewFrame) == JFileChooser.APPROVE_OPTION) {
-            return Optional.of(fileChooser.getSelectedFile());
-        }
-
-        return Optional.empty();
+        return dataFileChooser.browseDataFileOnCenterOf(viewFrame);
     }
 
     public Optional<String> askToNewCategoryName() {
