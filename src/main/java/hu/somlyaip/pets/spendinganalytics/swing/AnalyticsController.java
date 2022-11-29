@@ -4,6 +4,7 @@ import hu.somlyaip.pets.spendinganalytics.swing.categories.dto.Category;
 import hu.somlyaip.pets.spendinganalytics.swing.view.AnalyticsView;
 import hu.somlyaip.pets.spendinganalytics.swing.view.DateFormatter;
 import hu.somlyaip.pets.spendinganalytics.swing.view.HufFormatter;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -14,6 +15,7 @@ import java.util.Collections;
  * created at 2022. 10. 19.
  */
 @Component
+@Slf4j
 public class AnalyticsController implements IAnalyticsController {
 
     private final AnalyticsModel model;
@@ -39,14 +41,23 @@ public class AnalyticsController implements IAnalyticsController {
     @Override
     public void browseTransactionDataFile() {
         view.browseTransactionDataFile().ifPresent(file -> new Thread(() -> {
-            model.loadCategories();
+            try {
+                model.loadCategories();
 
-            view.disableBrowseButton();
-            model.loadTransactionDataFile(file);
-            view.enableBrowseButton();
+                view.disableBrowseButton();
+                try {
+                    model.loadTransactionDataFile(file);
+                } finally {
+                    view.enableBrowseButton();
+                }
 
-            view.selectAllCategories();
-            view.updateChart();
+                view.selectAllCategories();
+                view.updateChart();
+
+            } catch (Exception e) {
+                view.notifyUserFromFailedToLoadDataFile(e);
+                log.error("Failed to load datafile", e);
+            }
         }).start());
     }
 

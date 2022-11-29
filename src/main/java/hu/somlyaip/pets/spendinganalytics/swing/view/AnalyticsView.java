@@ -186,6 +186,13 @@ public class AnalyticsView implements
         );
     }
 
+    public void notifyUserFromFailedToLoadDataFile(Exception e) {
+        JOptionPane.showMessageDialog(
+                this.viewFrame, "Failed to load datafile. Error: %s".formatted(e),
+                "Unexpected error", JOptionPane.ERROR_MESSAGE
+        );
+    }
+
     public void selectAllCategories() {
         categoriesUiComponent.selectAllCategories();
     }
