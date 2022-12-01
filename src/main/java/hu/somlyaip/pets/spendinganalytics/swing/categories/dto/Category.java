@@ -14,7 +14,11 @@ import java.util.Collection;
 @AllArgsConstructor
 @Builder
 @Getter
-@EqualsAndHashCode
+/*
+ mapCategoryToTransactions map's key can be a Category. A Category's sellers can be changed over time,
+ so we use only name field for equality check.
+ */
+@EqualsAndHashCode(of = "name")
 @ToString
 public class Category implements ISelectableCategory {
 
