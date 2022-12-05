@@ -218,4 +218,11 @@ public class AnalyticsView implements
     public void updateChart() {
         chartUiComponent.updateChart(model.getCategoriesPieChartSeriesList());
     }
+
+    public void notifyCategoryAlreadyExists() {
+        JOptionPane.showMessageDialog(
+                this.viewFrame, "Category is already exists. Use an unique name",
+                "Failed to add category", JOptionPane.WARNING_MESSAGE
+        );
+    }
 }
