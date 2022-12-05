@@ -130,7 +130,11 @@ public class AnalyticsModel {
         return Optional.ofNullable(moneyTransactions);
     }
 
-    public void addNewCategory(Category newCategory) {
+    public void addNewCategory(Category newCategory) throws CategoryAlreadyExistsException {
+        if (mapCategoryToTransactions.containsKey(newCategory)) {
+            throw new CategoryAlreadyExistsException();
+        }
+
         mapCategoryToTransactions.put(newCategory, new ArrayList<>());
         saveCategories();
         notifyCategoriesUpdatedObservers();

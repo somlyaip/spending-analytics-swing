@@ -68,7 +68,14 @@ public class AnalyticsController implements IAnalyticsController {
                     .name(categoryName)
                     .sellers(new ArrayList<>())
                     .build();
-            model.addNewCategory(newCategory);
+            try {
+                model.addNewCategory(newCategory);
+
+            } catch (CategoryAlreadyExistsException e) {
+                view.notifyCategoryAlreadyExists();
+                return;
+            }
+
             view.updateChart();
         });
     }
