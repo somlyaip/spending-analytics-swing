@@ -13,13 +13,18 @@ import java.text.DecimalFormatSymbols;
 @Component
 public class HufFormatter {
 
-    public String format(BigDecimal amount) {
+    private final DecimalFormat format;
+
+    public HufFormatter() {
         DecimalFormatSymbols symbols = new DecimalFormatSymbols();
         symbols.setGroupingSeparator(' ');
-        DecimalFormat format = new DecimalFormat("###########0.#### HUF");
+        format = new DecimalFormat("###########0.#### HUF");
         format.setDecimalFormatSymbols(symbols);
         format.setGroupingSize(3);
         format.setGroupingUsed(true);
+    }
+
+    public String format(BigDecimal amount) {
         return format.format(amount);
     }
 }

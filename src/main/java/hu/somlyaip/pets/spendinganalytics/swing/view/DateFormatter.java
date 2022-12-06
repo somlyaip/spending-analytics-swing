@@ -12,7 +12,9 @@ import java.time.format.DateTimeFormatter;
 @Component
 public class DateFormatter {
 
+    public static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy.MM.dd");
+
     public String format(LocalDate date) {
-        return date.format(DateTimeFormatter.ofPattern("yyyy.MM.dd"));
+        return date.format(DATE_TIME_FORMATTER);
     }
 }
